@@ -15,3 +15,22 @@ export interface Product {
   description: string;
   created_at: string;
 }
+
+export interface SiteSettings {
+  id: string;
+  phone: string;
+  email: string;
+  lat: number;
+  lng: number;
+  motto: string;
+  hero_image_url: string;
+  our_story: string;
+  about_image_url: string;
+  about_slogan: string;
+  footer_text: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+}

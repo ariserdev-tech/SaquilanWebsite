@@ -42,25 +42,27 @@ export default function Contact() {
           <p className="text-slate-600 dark:text-slate-400">Located in Badtasan, Kiamba. Reach out to us for any inquiries.</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-12 items-stretch">
           {/* Map Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="h-[400px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800"
+            className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col"
           >
-            <MapContainer center={position} zoom={13} scrollWheelZoom={false}>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <Marker position={position}>
-                <Popup>
-                  BlueOrange Store <br /> Badtasan, Kiamba, Sarangani
-                </Popup>
-              </Marker>
-            </MapContainer>
+            <div className="flex-grow min-h-[400px]">
+              <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={position}>
+                  <Popup>
+                    SaquilanMerchandise <br /> Badtasan, Kiamba, Sarangani
+                  </Popup>
+                </Marker>
+              </MapContainer>
+            </div>
           </motion.div>
 
           {/* Contact Form */}
@@ -68,9 +70,9 @@ export default function Contact() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700"
+            className="bg-slate-50 dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col"
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 flex flex-col flex-grow">
               <div>
                 <label className="block text-sm font-bold mb-2">Email Address</label>
                 <input
@@ -80,18 +82,17 @@ export default function Contact() {
                   className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
               </div>
-              <div>
+              <div className="flex-grow flex flex-col">
                 <label className="block text-sm font-bold mb-2">Your Message</label>
                 <textarea
                   required
-                  rows={4}
                   placeholder="How can we help you?"
-                  className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary outline-none transition-all resize-none"
+                  className="w-full flex-grow px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary outline-none transition-all resize-none min-h-[200px]"
                 />
               </div>
               <button
                 disabled={isSubmitting}
-                className="w-full py-4 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all disabled:opacity-70 shadow-lg shadow-primary/20"
+                className="w-full py-4 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all disabled:opacity-70 shadow-lg shadow-primary/20 mt-auto"
               >
                 {isSubmitting ? (
                   <Loader2 className="animate-spin" size={20} />

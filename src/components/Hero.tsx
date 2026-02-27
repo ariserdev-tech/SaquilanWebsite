@@ -26,8 +26,8 @@ export default function Hero() {
             📍 Badtasan, Kiamba, Sarangani Province
           </motion.span>
           
-          <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight">
-            Premium <span className="text-accent">Merchandises</span> for Every Store & Customer.
+          <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight text-slate-900 dark:text-white">
+            Premium <span className="text-accent/90 dark:text-accent">Merchandises</span> for Every Store & Customer.
           </h1>
           
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-lg leading-relaxed">
@@ -39,7 +39,7 @@ export default function Hero() {
               href="#products"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-primary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
+              className="px-8 py-4 bg-primary dark:bg-primary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
             >
               <ShoppingCart size={20} />
               Shop Now
@@ -48,7 +48,7 @@ export default function Hero() {
               href="#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+              className="px-8 py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
             >
               <MessageCircle size={20} />
               Contact Us

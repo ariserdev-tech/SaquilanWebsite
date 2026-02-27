@@ -45,7 +45,7 @@ export default function Header({ isDarkMode, toggleDarkMode, activeTab, setActiv
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
             <Store size={24} strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-extrabold tracking-tighter text-primary dark:text-white leading-none font-display">
+          <span className="text-xl font-extrabold tracking-tighter text-slate-900 dark:text-white leading-none font-display">
             SAQUILAN<br/><span className="text-accent">MERCHANDISE</span>
           </span>
         </button>
@@ -66,7 +66,7 @@ export default function Header({ isDarkMode, toggleDarkMode, activeTab, setActiv
           ))}
           <button
             onClick={toggleDarkMode}
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 ml-4"
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700 ml-4 text-slate-700 dark:text-slate-300"
             aria-label="Toggle theme"
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -77,7 +77,7 @@ export default function Header({ isDarkMode, toggleDarkMode, activeTab, setActiv
         <div className="flex items-center gap-4 md:hidden">
           <button
             onClick={toggleDarkMode}
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
