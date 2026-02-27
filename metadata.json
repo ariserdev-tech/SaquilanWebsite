@@ -1,0 +1,5 @@
+{
+  "name": "BlueOrange Ecommerce",
+  "description": "A premium one-page ecommerce store with modern animations, dark mode, and Supabase integration.",
+  "requestFramePermissions": ["geolocation"]
+}
