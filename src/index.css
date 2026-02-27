@@ -4,19 +4,38 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Outfit", sans-serif;
-  --color-primary: #1e3a8a; /* Deep Blue */
-  --color-accent: #f97316;  /* Orange */
+  --color-primary: #0f172a;
+  /* Slate 900 - Premium Deep Blue */
+  --color-accent: #0ea5e9;
+  /* Sky 500 - Professional Teal/Blue */
+  --color-accent-hover: #0284c7;
 }
 
 @layer base {
+  :root {
+    --bg-main: #ffffff;
+    --text-main: #0f172a;
+    --bg-card: #f8fafc;
+    --border-main: #e2e8f0;
+  }
+
+  .dark {
+    --bg-main: #020617;
+    --text-main: #f8fafc;
+    --bg-card: #0f172a;
+    --border-main: #1e293b;
+  }
+
   body {
-    @apply bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100;
-    background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.3s, color 0.3s;
+    background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
     background-size: 40px 40px;
   }
 
   .dark body {
-    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
   }
 
   body::after {
@@ -45,14 +64,6 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
-  @apply bg-slate-50 text-slate-900 transition-colors duration-300;
-}
-
-.dark body {
-  @apply bg-slate-950 text-slate-100;
-}
-
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -60,8 +71,10 @@ body {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Custom Scrollbar for the rest of the site */

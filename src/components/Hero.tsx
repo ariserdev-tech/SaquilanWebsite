@@ -1,29 +1,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ShoppingCart, MessageCircle } from 'lucide-react';
-import FloatingShapes from './FloatingShapes';
+import { SiteSettings } from '../lib/supabaseClient';
 
-export default function Hero() {
+interface HeroProps {
+  settings: SiteSettings | null;
+}
+
+export default function Hero({ settings }: HeroProps) {
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      <FloatingShapes />
-      
-      {/* Additional Hero-specific shapes */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/4 left-10 w-24 h-24 border border-primary/20 rounded-full flex items-center justify-center"
-        >
-          <div className="w-2 h-2 bg-primary/30 rounded-full" />
-        </motion.div>
-        
-        <motion.div
-          animate={{ y: [0, 30, 0], x: [0, 20, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-20 w-16 h-16 border border-accent/20 rounded-3xl rotate-12"
-        />
-      </div>
 
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
@@ -45,11 +31,11 @@ export default function Hero() {
           >
             📍 Badtasan, Kiamba, Sarangani Province
           </motion.span>
-          
+
           <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight text-slate-900 dark:text-white">
-            Premium <span className="text-accent/90 dark:text-accent">Merchandises</span> for Every Store & Customer.
+            {settings?.motto || 'Premium Merchandises for Every Store & Customer.'}
           </h1>
-          
+
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-lg leading-relaxed">
             SaquilanMerchandise provides high-quality products tailored for both wholesale stores and individual customers. We bring excellence right to your doorstep in Sarangani.
           </p>
@@ -59,7 +45,7 @@ export default function Hero() {
               href="#products"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-primary dark:bg-primary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
+              className="px-8 py-4 bg-primary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
             >
               <ShoppingCart size={20} />
               Shop Now
@@ -68,7 +54,7 @@ export default function Hero() {
               href="#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+              className="px-8 py-4 bg-white dark:bg-slate-800 text-primary dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm"
             >
               <MessageCircle size={20} />
               Contact Us
@@ -82,25 +68,14 @@ export default function Hero() {
           transition={{ duration: 1, ease: 'easeOut' }}
           className="relative hidden lg:block"
         >
-          <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl bg-slate-100 dark:bg-slate-800 aspect-[8/10]">
             <img
-              src="https://picsum.photos/seed/ecommerce/800/1000"
+              src={settings?.hero_image_url || "https://picsum.photos/seed/ecommerce/800/1000"}
               alt="Hero Product"
-              className="w-full h-auto object-cover"
+              className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
           </div>
-          {/* Decorative floating elements */}
-          <motion.div
-            animate={{ y: [0, -20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -top-10 -right-10 w-32 h-32 bg-accent rounded-2xl -z-10 blur-2xl opacity-50"
-          />
-          <motion.div
-            animate={{ y: [0, 20, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary rounded-full -z-10 blur-2xl opacity-30"
-          />
         </motion.div>
       </div>
     </section>
