@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, ShoppingBag, Info, Mail, Store } from 'lucide-react';
+import { Sun, Moon, ShoppingBag, Info, Mail, Store, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/src/lib/utils';
 
 interface HeaderProps {
@@ -71,16 +72,30 @@ export default function Header({ isDarkMode, toggleDarkMode, activeTab, setActiv
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
+          <Link
+            to="/admin"
+            className="ml-4 px-4 py-2 bg-slate-900 dark:bg-slate-800 text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+          >
+            <User size={16} />
+            Login
+          </Link>
         </nav>
 
-        {/* Mobile Theme Toggle Only */}
-        <div className="flex items-center gap-4 md:hidden">
+        {/* Mobile Theme Toggle & Login */}
+        <div className="flex items-center gap-2 md:hidden">
           <button
             onClick={toggleDarkMode}
             className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
+          <Link
+            to="/admin"
+            className="p-2 rounded-full bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700"
+            aria-label="Admin Login"
+          >
+            <User size={20} />
+          </Link>
         </div>
       </div>
     </header>
