@@ -1,10 +1,27 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Award, ShieldCheck, Truck } from 'lucide-react';
+import FloatingShapes from './FloatingShapes';
 
 export default function About() {
   return (
-    <section id="about" className="py-24 overflow-hidden">
+    <section id="about" className="relative py-24 overflow-hidden">
+      <FloatingShapes />
+      
+      {/* About-specific decorative pattern */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10">
+        <div className="absolute top-20 right-10 w-40 h-40 grid grid-cols-4 gap-2">
+          {[...Array(16)].map((_, i) => (
+            <motion.div
+              key={i}
+              animate={{ opacity: [0.2, 1, 0.2] }}
+              transition={{ duration: 2, delay: i * 0.1, repeat: Infinity }}
+              className="w-2 h-2 bg-primary rounded-full"
+            />
+          ))}
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div

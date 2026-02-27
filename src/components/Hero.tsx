@@ -1,10 +1,30 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ShoppingCart, MessageCircle } from 'lucide-react';
+import FloatingShapes from './FloatingShapes';
 
 export default function Hero() {
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      <FloatingShapes />
+      
+      {/* Additional Hero-specific shapes */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/4 left-10 w-24 h-24 border border-primary/20 rounded-full flex items-center justify-center"
+        >
+          <div className="w-2 h-2 bg-primary/30 rounded-full" />
+        </motion.div>
+        
+        <motion.div
+          animate={{ y: [0, 30, 0], x: [0, 20, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 right-20 w-16 h-16 border border-accent/20 rounded-3xl rotate-12"
+        />
+      </div>
+
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl -mr-64 -mt-32" />
