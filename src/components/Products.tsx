@@ -148,41 +148,24 @@ export default function Products() {
           </div>
         </div>
 
-        {/* Desktop Carousel / Mobile Grid */}
-        <div className="relative group overflow-visible">
-          <div
-            ref={carouselRef}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            className="flex gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-8 md:pb-4 scroll-smooth"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <div key={product.id} className="min-w-[280px] md:min-w-[350px] snap-center px-2">
-                  <ProductCard product={product} />
-                </div>
-              ))
-            ) : (
-              <div className="w-full py-20 text-center text-slate-500">
-                No merchandises found matching your criteria.
-              </div>
-            )}
-          </div>
-          
-          {/* Carousel Controls (Desktop Only) */}
-          <button 
-            onClick={() => carouselRef.current?.scrollBy({ left: -340, behavior: 'smooth' })}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white dark:bg-slate-800 rounded-full shadow-xl flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex z-20"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button 
-            onClick={() => carouselRef.current?.scrollBy({ left: 340, behavior: 'smooth' })}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white dark:bg-slate-800 rounded-full shadow-xl flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex z-20"
-          >
-            <ChevronRight size={24} />
-          </button>
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center text-slate-500">
+              No merchandises found matching your criteria.
+            </div>
+          )}
         </div>
       </div>
     </section>

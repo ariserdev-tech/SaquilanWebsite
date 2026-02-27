@@ -1,5 +1,5 @@
 {
-  "name": "BlueOrange Ecommerce",
-  "description": "A premium one-page ecommerce store with modern animations, dark mode, and Supabase integration.",
+  "name": "SaquilanMerchandise",
+  "description": "Premium merchandises for stores and individual customers in Sarangani Province.",
   "requestFramePermissions": ["geolocation"]
 }

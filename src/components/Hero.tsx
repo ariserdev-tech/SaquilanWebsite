@@ -27,11 +27,11 @@ export default function Hero() {
           </motion.span>
           
           <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight">
-            Premium <span className="text-accent">Merchandises</span> for Every Occasion.
+            Premium <span className="text-accent">Merchandises</span> for Every Store & Customer.
           </h1>
           
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-lg leading-relaxed">
-            Discover our curated selection of high-quality merchandises. We bring you the best products right to your doorstep in Sarangani.
+            SaquilanMerchandise provides high-quality products tailored for both wholesale stores and individual customers. We bring excellence right to your doorstep in Sarangani.
           </p>
 
           <div className="flex flex-wrap gap-4">
