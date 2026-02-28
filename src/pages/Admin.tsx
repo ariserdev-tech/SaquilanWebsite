@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { supabase, Product, SiteSettings, Category } from '@/src/lib/supabaseClient';
 import { cn } from '@/src/lib/utils';
+import { Link } from 'react-router-dom';
 
 // Fix for default marker icons in Leaflet
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -285,6 +286,11 @@ export default function Admin() {
           <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-accent/20 rounded-full blur-[120px] opacity-30" />
         </div>
 
+        <Link to="/" className="absolute top-6 left-6 z-20 flex items-center gap-2 text-slate-400 hover:text-white transition-colors bg-slate-900/50 backdrop-blur-md px-4 py-2 rounded-full border border-slate-800">
+          <ChevronLeft size={18} />
+          <span className="text-sm font-bold uppercase tracking-widest">Back to Home</span>
+        </Link>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -385,13 +391,20 @@ export default function Admin() {
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
                   "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap flex-shrink-0",
-                  activeTab === tab.id ? "bg-accent text-white shadow-sm" : "text-slate-400"
+                  activeTab === tab.id ? "bg-accent text-white shadow-sm" : "text-slate-400 hover:text-white"
                 )}
               >
                 {tab.label}
               </button>
             ))}
           </nav>
+
+          <Link
+            to="/"
+            className="flex-shrink-0 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-colors hidden sm:flex items-center gap-2 border border-slate-700"
+          >
+            <ChevronLeft size={16} /> Home
+          </Link>
 
           <button
             onClick={handleLogout}

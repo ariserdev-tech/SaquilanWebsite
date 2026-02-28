@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Youtube, Store } from 'lucide-react';
 import { SiteSettings } from '../lib/supabaseClient';
 
@@ -27,7 +28,7 @@ export default function Footer({ settings }: FooterProps) {
 
           <div className="pt-8 border-t border-slate-100 dark:border-slate-800 w-full flex justify-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              © {currentYear} SaquilanMerchandise. All rights reserved.
+              <Link to="/admin" className="cursor-default hover:text-slate-500 dark:hover:text-slate-400">©</Link> {currentYear} SaquilanMerchandise. All rights reserved.
             </p>
           </div>
         </div>
