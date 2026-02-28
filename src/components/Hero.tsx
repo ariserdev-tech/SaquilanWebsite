@@ -5,9 +5,10 @@ import { SiteSettings } from '../lib/supabaseClient';
 
 interface HeroProps {
   settings: SiteSettings | null;
+  setActiveTab: (tab: string) => void;
 }
 
-export default function Hero({ settings }: HeroProps) {
+export default function Hero({ settings, setActiveTab }: HeroProps) {
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
 
@@ -41,24 +42,24 @@ export default function Hero({ settings }: HeroProps) {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <motion.a
-              href="#products"
+            <motion.button
+              onClick={() => setActiveTab('products')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-slate-900 dark:bg-accent text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-slate-900/20 dark:shadow-accent/20 hover:opacity-90 transition-all"
+              className="px-8 py-4 bg-slate-900 dark:bg-accent text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-slate-900/20 dark:shadow-accent/20 hover:opacity-90 transition-all cursor-pointer"
             >
               <ShoppingCart size={20} />
               Shop Now
-            </motion.a>
-            <motion.a
-              href="#contact"
+            </motion.button>
+            <motion.button
+              onClick={() => setActiveTab('contact')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-white dark:bg-slate-800 text-primary dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm"
+              className="px-8 py-4 bg-white dark:bg-slate-800 text-primary dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer"
             >
               <MessageCircle size={20} />
               Contact Us
-            </motion.a>
+            </motion.button>
           </div>
         </motion.div>
 

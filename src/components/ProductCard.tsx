@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Maximize2, X } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Maximize2 } from 'lucide-react';
 import { Product } from '@/src/lib/supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const isOutOfStock = product.stock_status === 'out_of_stock';
+  const navigate = useNavigate();
 
   return (
     <>
@@ -19,8 +20,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         className="bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-700 flex flex-row h-full group"
       >
         <div
-          className="relative w-2/5 flex-shrink-0 overflow-hidden cursor-zoom-in"
-          onClick={() => setIsModalOpen(true)}
+          className="relative w-2/5 flex-shrink-0 overflow-hidden cursor-pointer"
+          onClick={() => navigate(`/product/${product.id}`)}
         >
           {/* Skeleton */}
           {!imageLoaded && (
@@ -75,8 +76,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           <div className="pt-2 border-t border-slate-700 flex items-center">
             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${isOutOfStock
-                ? 'bg-red-900/30 text-red-400'
-                : 'bg-green-900/30 text-green-400'
+              ? 'bg-red-900/30 text-red-400'
+              : 'bg-green-900/30 text-green-400'
               }`}>
               {isOutOfStock ? 'OUT OF STOCK' : 'AVAILABLE'}
             </span>
@@ -84,43 +85,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </motion.div>
 
-      {/* Image Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
-            onClick={() => setIsModalOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-5xl w-full aspect-[16/10] bg-slate-800 rounded-3xl overflow-hidden shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
-              >
-                <X size={24} />
-              </button>
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                <h2 className="text-3xl font-bold font-display mb-2">{product.name}</h2>
-                <p className="text-lg opacity-90">{product.description}</p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

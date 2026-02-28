@@ -20,7 +20,6 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   }, []);
 
   const navLinks = [
-    { name: 'Home', id: 'home', icon: Info },
     { name: 'Products', id: 'products', icon: ShoppingBag },
     { name: 'About', id: 'about', icon: Info },
     { name: 'Contact', id: 'contact', icon: Mail },
@@ -48,23 +47,50 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           </span>
         </button>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => setActiveTab(link.id)}
-              className={cn(
-                "text-xs font-bold uppercase tracking-widest transition-all hover:text-accent",
-                activeTab === link.id ? "text-accent border-b-2 border-accent pb-1" : "text-slate-400"
-              )}
-            >
-              {link.name}
-            </button>
-          ))}
-        </nav>
+        {/* Navigation Tabs (Desktop & Mobile) */}
+        <nav className="flex items-center gap-3 md:gap-8 overflow-x-auto no-scrollbar">
+          {navLinks.map((link) => {
+            const handleNavClick = () => {
+              if (link.id === 'about' || link.id === 'contact') {
+                if (activeTab !== 'home') {
+                  setActiveTab('home');
+                  // Give React a tick to render Home
+                  setTimeout(() => {
+                    document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                } else {
+                  document.getElementById(link.id)?.scrollIntoView({ behavior: 'smooth' });
+                }
+              } else {
+                setActiveTab(link.id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            };
 
-        {/* Mobile — nothing extra needed since BottomNav handles mobile navigation */}
+            const isActive = activeTab === link.id || (activeTab === 'home' && (link.id === 'about' || link.id === 'contact') ? false : false);
+
+            return (
+              <button
+                key={link.id}
+                onClick={handleNavClick}
+                className={cn(
+                  "flex flex-col md:flex-row items-center gap-1 md:gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap",
+                  isActive
+                    ? "text-accent border-b-2 border-accent pb-1 md:pb-0 md:border-b-0"
+                    : "text-slate-400 hover:text-accent"
+                )}
+              >
+                <link.icon className="md:hidden" size={18} strokeWidth={isActive ? 2.5 : 2} />
+                <span className={cn(
+                  "md:block",
+                  isActive ? "opacity-100" : "opacity-70"
+                )}>
+                  {link.name}
+                </span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
     </header>
   );

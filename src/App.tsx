@@ -6,11 +6,11 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Products from './components/Products';
 import Footer from './components/Footer';
-import BottomNav from './components/BottomNav';
 import BackToTop from './components/BackToTop';
 import Admin from './pages/Admin';
 import { supabase, SiteSettings } from './lib/supabaseClient';
 import { Loader2 } from 'lucide-react';
+import ProductDetail from './pages/ProductDetail';
 
 // Force dark mode permanently
 document.documentElement.classList.add('dark');
@@ -56,18 +56,15 @@ function MainLayout() {
       <div className="flex-grow pt-20">
         {activeTab === 'home' && (
           <>
-            <Hero settings={settings} />
+            <Hero settings={settings} setActiveTab={setActiveTab} />
             <About settings={settings} />
             <Contact settings={settings} />
           </>
         )}
         {activeTab === 'products' && <Products />}
-        {activeTab === 'about' && <About settings={settings} />}
-        {activeTab === 'contact' && <Contact settings={settings} />}
       </div>
 
       <Footer settings={settings} />
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
       <BackToTop />
     </div>
   );
@@ -87,8 +84,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<MainLayout />} />
         <Route path="/admin" element={<AdminLayout />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="*" element={<Navigate to="/" replace />} />      </Routes>
     </Router>
   );
 }
