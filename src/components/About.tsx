@@ -62,7 +62,7 @@ export default function About({ settings }: AboutProps) {
               )}
             </div>
 
-            <div className="p-6 bg-primary/5 rounded-2xl border border-primary/10">
+            <div className="p-6 bg-slate-800 rounded-2xl border border-slate-700">
               <p className="italic text-primary font-medium">
                 "We don't just sell merchandises; we provide value and quality to every home in Sarangani."
               </p>

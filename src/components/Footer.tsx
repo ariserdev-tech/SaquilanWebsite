@@ -14,7 +14,7 @@ export default function Footer({ settings }: FooterProps) {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+            <div className="w-8 h-8 bg-accent rounded flex items-center justify-center text-white">
               <Store size={18} />
             </div>
             <span className="text-xl font-black tracking-tighter">

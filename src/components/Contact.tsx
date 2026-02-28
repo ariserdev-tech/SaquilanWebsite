@@ -100,7 +100,7 @@ export default function Contact({ settings }: ContactProps) {
             className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col"
           >
             <div className="flex-grow min-h-[400px]">
-              <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+              <MapContainer key={`${position[0]}-${position[1]}`} center={position} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -124,7 +124,7 @@ export default function Contact({ settings }: ContactProps) {
             <form onSubmit={handleSubmit} className="space-y-6 flex flex-col flex-grow">
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-2 ml-1">Full Name</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-2 ml-1">Full Name</label>
                   <input
                     required
                     name="name"
@@ -133,12 +133,11 @@ export default function Contact({ settings }: ContactProps) {
                     autoCorrect="off"
                     autoCapitalize="words"
                     spellCheck="false"
-                    placeholder="John Doe"
-                    className="w-full px-4 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary outline-none transition-all"
+                    className="w-full px-4 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-2 ml-1">Email Address</label>
+                  <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-2 ml-1">Email Address</label>
                   <input
                     required
                     name="email"
@@ -148,12 +147,12 @@ export default function Contact({ settings }: ContactProps) {
                     autoCapitalize="off"
                     spellCheck="false"
                     placeholder="your@email.com"
-                    className="w-full px-4 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary outline-none transition-all"
+                    className="w-full px-4 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all"
                   />
                 </div>
               </div>
               <div className="flex-grow flex flex-col">
-                <label className="block text-xs font-bold uppercase text-slate-500 mb-2 ml-1">Your Message</label>
+                <label className="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-2 ml-1">Your Message</label>
                 <textarea
                   required
                   name="message"
@@ -161,12 +160,12 @@ export default function Contact({ settings }: ContactProps) {
                   autoCorrect="off"
                   spellCheck="false"
                   placeholder="How can we help you?"
-                  className="w-full flex-grow px-4 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary outline-none transition-all resize-none min-h-[150px]"
+                  className="w-full flex-grow px-4 py-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all resize-none min-h-[150px] placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>
               <button
                 disabled={isSubmitting}
-                className="w-full py-4 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-70 shadow-lg shadow-primary/20 mt-auto"
+                className="w-full py-4 bg-slate-900 dark:bg-accent text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-70 shadow-lg shadow-slate-900/20 dark:shadow-accent/20 mt-auto"
               >
                 {isSubmitting ? (
                   <Loader2 className="animate-spin" size={20} />
@@ -208,7 +207,7 @@ export default function Contact({ settings }: ContactProps) {
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-primary">
                   <Mail size={20} />
                 </div>
                 <div>

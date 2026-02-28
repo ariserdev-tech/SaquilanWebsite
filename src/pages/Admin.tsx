@@ -33,8 +33,9 @@ export default function Admin() {
   const [productForm, setProductForm] = useState<Partial<Product>>({
     name: '', price_php: 0, category: '', description: '', stock_status: 'available', image_url: ''
   });
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingSection, setUploadingSection] = useState<'product' | 'hero' | 'about' | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadDoneSection, setUploadDoneSection] = useState<string | null>(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -95,10 +96,10 @@ export default function Admin() {
     setSession(null);
   };
 
-  // Image Management
-  const uploadImage = async (file: File, bucket: string = 'SaquilanWebsite') => {
-    setUploadingImage(true);
+  const uploadImage = async (file: File, bucket: string = 'SaquilanWebsite', section: 'product' | 'hero' | 'about' = 'product') => {
+    setUploadingSection(section);
     setUploadProgress(0);
+    setUploadDoneSection(null);
     try {
       if (!file) throw new Error('No file selected');
 
@@ -106,8 +107,6 @@ export default function Admin() {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
       const filePath = fileName;
 
-      // Correctly derive storage endpoint
-      // getPublicUrl returns something like https://[ref].supabase.co/storage/v1/object/public/[bucket]/[path]
       const publicUrlInfo = supabase.storage.from(bucket).getPublicUrl(filePath);
       const publicUrl = publicUrlInfo.data.publicUrl;
       const baseUrl = publicUrl.split('/public/')[0];
@@ -117,18 +116,11 @@ export default function Admin() {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', uploadUrl);
 
-        // Explicitly get session and anon key for headers
         const { data: { session } } = await supabase.auth.getSession();
         const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-        if (session) {
-          xhr.setRequestHeader('Authorization', `Bearer ${session.access_token}`);
-        }
-        if (anonKey) {
-          xhr.setRequestHeader('apikey', anonKey);
-        }
-
-        // Ensure Content-Type is set for storage
+        if (session) xhr.setRequestHeader('Authorization', `Bearer ${session.access_token}`);
+        if (anonKey) xhr.setRequestHeader('apikey', anonKey);
         xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
 
         xhr.upload.onprogress = (event) => {
@@ -152,16 +144,19 @@ export default function Admin() {
         xhr.send(file);
       });
 
-      // Show 100% for a moment before finishing
+      // Show 100% completed state briefly
       setUploadProgress(100);
-      await new Promise(r => setTimeout(r, 800));
+      setUploadingSection(null);
+      setUploadDoneSection(section);
+      await new Promise(r => setTimeout(r, 1200));
+      setUploadDoneSection(null);
       return result;
     } catch (error: any) {
       console.error('Error in uploadImage:', error);
       alert(error.message || 'Error uploading image.');
       return null;
     } finally {
-      setUploadingImage(false);
+      setUploadingSection(null);
       setUploadProgress(0);
     }
   };
@@ -286,7 +281,7 @@ export default function Admin() {
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-950 px-6">
         {/* Abstract Background Design */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] opacity-50" />
+          <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-accent/10 rounded-full blur-[120px] opacity-50" />
           <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-accent/20 rounded-full blur-[120px] opacity-30" />
         </div>
 
@@ -346,7 +341,7 @@ export default function Admin() {
               <button
                 type="submit"
                 disabled={authLoading}
-                className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-primary/90 active:scale-[0.98] transition-all shadow-2xl shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="w-full py-5 bg-accent text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-accent-hover active:scale-[0.98] transition-all shadow-2xl shadow-accent/30 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 {authLoading ? (
                   <Loader2 className="animate-spin" size={20} />
@@ -369,67 +364,55 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+    <div className="min-h-screen bg-slate-950 pb-20">
       {/* Admin Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
-              <Store size={24} />
-            </div>
-            <span className="text-lg font-black tracking-tighter hidden sm:block">ADMIN PANEL</span>
+      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex items-center gap-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-slate-700 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+            <Store size={20} />
           </div>
+          <span className="text-sm sm:text-lg font-black tracking-tighter hidden xs:block">ADMIN</span>
 
-          <nav className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-            <button
-              onClick={() => setActiveTab('merchandise')}
-              className={cn(
-                "px-4 py-2 rounded-lg text-sm font-bold transition-all",
-                activeTab === 'merchandise' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-500"
-              )}
-            >
-              Merchandise
-            </button>
-            <button
-              onClick={() => setActiveTab('categories')}
-              className={cn(
-                "px-4 py-2 rounded-lg text-sm font-bold transition-all",
-                activeTab === 'categories' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-500"
-              )}
-            >
-              Categories
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={cn(
-                "px-4 py-2 rounded-lg text-sm font-bold transition-all",
-                activeTab === 'settings' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-500"
-              )}
-            >
-              Settings
-            </button>
+          {/* Tab Nav - scrollable on mobile */}
+          <nav className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl overflow-x-auto no-scrollbar flex-1 mx-2">
+            {([
+              { id: 'merchandise' as const, label: 'Merch' },
+              { id: 'categories' as const, label: 'Categories' },
+              { id: 'settings' as const, label: 'Settings' },
+            ] as const).map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap flex-shrink-0",
+                  activeTab === tab.id ? "bg-accent text-white shadow-sm" : "text-slate-400"
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
           </nav>
 
           <button
             onClick={handleLogout}
-            className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+            className="flex-shrink-0 p-2 text-slate-400 hover:text-red-400 transition-colors"
             title="Logout"
           >
-            <LogOut size={24} />
+            <LogOut size={20} />
           </button>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-10">
         {activeTab === 'merchandise' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-extrabold font-display">Manage Merchandises</h2>
+            <div className="flex items-center justify-between mb-6 gap-4">
+              <h2 className="text-xl sm:text-2xl font-extrabold font-display">Manage Merchandises</h2>
               <button
                 onClick={() => setIsAddingProduct(true)}
-                className="px-6 py-3 bg-primary text-white rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-accent text-white rounded-xl font-bold flex items-center gap-2 hover:bg-accent-hover transition-all shadow-lg shadow-accent/20 text-sm flex-shrink-0"
               >
-                <Plus size={20} /> Add Item
+                <Plus size={18} /> <span className="hidden sm:inline">Add Item</span><span className="sm:hidden">Add</span>
               </button>
             </div>
 
@@ -437,7 +420,7 @@ export default function Admin() {
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 mb-10"
+                className="bg-slate-900 p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-800 mb-8"
               >
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold font-display">{editingProduct ? 'Edit Item' : 'New Item'}</h3>
@@ -446,7 +429,7 @@ export default function Admin() {
                   </button>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-4">
                     <div className="aspect-[16/7] bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden flex items-center justify-center relative group border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-primary transition-colors">
                       {productForm.image_url ? (
@@ -459,22 +442,30 @@ export default function Admin() {
                         <input
                           type="file"
                           className="hidden"
+                          accept="image/*"
                           onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const url = await uploadImage(file);
+                              const url = await uploadImage(file, 'SaquilanWebsite', 'product');
                               if (url) setProductForm({ ...productForm, image_url: url });
                             }
                           }}
                         />
                       </label>
-                      {uploadingImage && (
-                        <div className="absolute inset-0 bg-white/90 dark:bg-slate-950/90 flex flex-col items-center justify-center gap-3">
+                      {uploadingSection === 'product' && (
+                        <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center gap-3">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-300 mb-1">Product Image</p>
                           <div className="relative w-16 h-16 flex items-center justify-center">
                             <Loader2 className="animate-spin text-accent absolute inset-0" size={64} />
                             <span className="text-[10px] font-black text-accent">{uploadProgress}%</span>
                           </div>
                           <span className="text-[10px] font-black uppercase tracking-widest text-accent animate-pulse">Uploading...</span>
+                        </div>
+                      )}
+                      {uploadDoneSection === 'product' && (
+                        <div className="absolute inset-0 bg-green-900/80 flex flex-col items-center justify-center gap-2">
+                          <div className="w-12 h-12 rounded-full bg-green-400 flex items-center justify-center text-white text-2xl font-black">✓</div>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-green-300">Upload Complete!</span>
                         </div>
                       )}
                     </div>
@@ -540,28 +531,35 @@ export default function Admin() {
                 </div>
 
                 <div className="mt-8 flex justify-end gap-4">
-                  <button onClick={handleSaveProduct} className="px-8 py-3 bg-primary text-white rounded-xl font-bold flex items-center gap-2">
+                  <button onClick={handleSaveProduct} className="px-8 py-3 bg-accent text-white rounded-xl font-bold flex items-center gap-2">
                     <Save size={20} /> Save Item
                   </button>
                 </div>
               </motion.div>
             )}
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
               {products.map(product => (
-                <div key={product.id} className="bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col group/card hover:shadow-xl transition-all duration-500">
-                  <div className="aspect-[16/7] relative overflow-hidden">
-                    <img src={product.image_url} className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700" />
-                    <div className="absolute top-4 right-4 flex gap-2">
+                <div key={product.id} className="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex flex-col group/card hover:shadow-xl hover:shadow-black/30 transition-all duration-500">
+                  <div className="aspect-[16/7] relative overflow-hidden bg-slate-800">
+                    {/* Image skeleton */}
+                    <div className="absolute inset-0 bg-slate-800 animate-pulse" />
+                    <img
+                      src={product.image_url}
+                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700 relative z-10"
+                      onLoad={(e) => { (e.target as HTMLElement).style.opacity = '1'; }}
+                      style={{ opacity: 0, transition: 'opacity 0.5s' }}
+                    />
+                    <div className="absolute top-3 right-3 flex gap-2 z-20">
                       <button
                         onClick={() => { setEditingProduct(product); setProductForm(product); }}
-                        className="p-2 bg-white/90 dark:bg-slate-800/90 rounded-lg text-primary shadow-lg"
+                        className="p-2 bg-slate-800/90 rounded-lg text-primary shadow-lg"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button
                         onClick={() => handleDeleteProduct(product)}
-                        className="p-2 bg-white/90 dark:bg-slate-800/90 rounded-lg text-red-500 shadow-lg"
+                        className="p-2 bg-slate-800/90 rounded-lg text-red-400 shadow-lg"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -585,8 +583,8 @@ export default function Admin() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
             <h2 className="text-2xl font-extrabold font-display mb-8">Manage Categories</h2>
 
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 mb-8">
-              <div className="flex gap-4">
+            <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 mb-6">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   placeholder="New category name..."
@@ -596,7 +594,7 @@ export default function Admin() {
                 />
                 <button
                   onClick={handleAddCategory}
-                  className="px-6 py-3 bg-primary text-white rounded-xl font-bold flex items-center gap-2"
+                  className="px-6 py-3 bg-accent text-white rounded-xl font-bold flex items-center gap-2"
                 >
                   <Plus size={20} /> Add
                 </button>
@@ -617,26 +615,26 @@ export default function Admin() {
         )}
 
         {activeTab === 'settings' && settings && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto space-y-12">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto space-y-8">
+            <div className="flex flex-col gap-4">
               <div>
-                <h2 className="text-3xl font-black tracking-tight font-display mb-2">Site Settings</h2>
-                <p className="text-slate-500">Configure your website's identity, contact info, and content.</p>
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight font-display mb-1">Site Settings</h2>
+                <p className="text-slate-500 text-sm">Configure your website's identity, contact info, and content.</p>
               </div>
               <button
                 onClick={handleSaveSettings}
-                className="px-10 py-4 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-primary/30 hover:shadow-primary/40 active:scale-[0.98] transition-all"
+                className="w-full sm:w-auto px-8 py-3 sm:py-4 bg-accent text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-accent/30 hover:shadow-accent/40 active:scale-[0.98] transition-all"
               >
                 <Save size={20} /> Save All Changes
               </button>
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10">
               {/* Left Column - Navigation-like Grouping */}
               <div className="lg:col-span-4 space-y-8">
                 <section className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-800">
                   <h3 className="text-lg font-black mb-8 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                    <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center text-accent">
                       <Phone size={18} />
                     </div>
                     Contact Details
@@ -692,7 +690,7 @@ export default function Admin() {
               <div className="lg:col-span-8 space-y-8">
                 <section className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-800">
                   <h3 className="text-lg font-black mb-8 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                    <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center text-accent">
                       <ImageIcon size={18} />
                     </div>
                     Brand & Visuals
@@ -716,21 +714,28 @@ export default function Admin() {
                           <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center cursor-pointer backdrop-blur-sm">
                             <Upload size={32} className="text-white mb-2" />
                             <span className="text-white text-xs font-black uppercase">Change Image</span>
-                            <input type="file" className="hidden" onChange={async (e) => {
+                            <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                const url = await uploadImage(file, 'SaquilanWebsite');
+                                const url = await uploadImage(file, 'SaquilanWebsite', 'hero');
                                 if (url) setSettings({ ...settings, hero_image_url: url });
                               }
                             }} />
                           </label>
-                          {uploadingImage && (
-                            <div className="absolute inset-0 bg-white/90 dark:bg-slate-950/90 flex flex-col items-center justify-center gap-2">
+                          {uploadingSection === 'hero' && (
+                            <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center gap-2">
+                              <p className="text-[8px] font-black uppercase tracking-widest text-slate-300 mb-1">Hero Image</p>
                               <div className="relative w-12 h-12 flex items-center justify-center">
                                 <Loader2 className="animate-spin text-accent absolute inset-0" size={48} />
                                 <span className="text-[8px] font-black text-accent">{uploadProgress}%</span>
                               </div>
                               <span className="text-[8px] font-black uppercase tracking-widest text-accent">Uploading...</span>
+                            </div>
+                          )}
+                          {uploadDoneSection === 'hero' && (
+                            <div className="absolute inset-0 bg-green-900/80 flex flex-col items-center justify-center gap-2">
+                              <div className="w-10 h-10 rounded-full bg-green-400 flex items-center justify-center text-white text-xl font-black">✓</div>
+                              <span className="text-[8px] font-black uppercase tracking-widest text-green-300">Complete!</span>
                             </div>
                           )}
                         </div>
@@ -742,21 +747,28 @@ export default function Admin() {
                           <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center cursor-pointer backdrop-blur-sm">
                             <Upload size={32} className="text-white mb-2" />
                             <span className="text-white text-xs font-black uppercase">Change Image</span>
-                            <input type="file" className="hidden" onChange={async (e) => {
+                            <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                const url = await uploadImage(file, 'SaquilanWebsite');
+                                const url = await uploadImage(file, 'SaquilanWebsite', 'about');
                                 if (url) setSettings({ ...settings, about_image_url: url });
                               }
                             }} />
                           </label>
-                          {uploadingImage && (
-                            <div className="absolute inset-0 bg-white/90 dark:bg-slate-950/90 flex flex-col items-center justify-center gap-2">
+                          {uploadingSection === 'about' && (
+                            <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center gap-2">
+                              <p className="text-[8px] font-black uppercase tracking-widest text-slate-300 mb-1">About Image</p>
                               <div className="relative w-12 h-12 flex items-center justify-center">
                                 <Loader2 className="animate-spin text-accent absolute inset-0" size={48} />
                                 <span className="text-[8px] font-black text-accent">{uploadProgress}%</span>
                               </div>
                               <span className="text-[8px] font-black uppercase tracking-widest text-accent">Uploading...</span>
+                            </div>
+                          )}
+                          {uploadDoneSection === 'about' && (
+                            <div className="absolute inset-0 bg-green-900/80 flex flex-col items-center justify-center gap-2">
+                              <div className="w-10 h-10 rounded-full bg-green-400 flex items-center justify-center text-white text-xl font-black">✓</div>
+                              <span className="text-[8px] font-black uppercase tracking-widest text-green-300">Complete!</span>
                             </div>
                           )}
                         </div>
@@ -796,7 +808,7 @@ export default function Admin() {
 
                 <section className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-800">
                   <h3 className="text-lg font-black mb-8 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                    <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center text-accent">
                       <Store size={18} />
                     </div>
                     Legal & Footer

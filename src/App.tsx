@@ -12,29 +12,13 @@ import Admin from './pages/Admin';
 import { supabase, SiteSettings } from './lib/supabaseClient';
 import { Loader2 } from 'lucide-react';
 
+// Force dark mode permanently
+document.documentElement.classList.add('dark');
+
 function MainLayout() {
   const [activeTab, setActiveTab] = useState('home');
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark' ||
-        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDarkMode]);
-
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -56,8 +40,8 @@ function MainLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
-        <Loader2 className="animate-spin text-primary" size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <Loader2 className="animate-spin text-accent" size={48} />
       </div>
     );
   }
@@ -65,8 +49,6 @@ function MainLayout() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Header
-        isDarkMode={isDarkMode}
-        toggleDarkMode={toggleDarkMode}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
@@ -92,24 +74,8 @@ function MainLayout() {
 }
 
 function AdminLayout() {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark' ||
-        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
+    <div className="min-h-screen bg-slate-950 font-sans">
       <Admin />
     </div>
   );

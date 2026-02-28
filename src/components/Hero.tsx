@@ -13,7 +13,7 @@ export default function Hero({ settings }: HeroProps) {
 
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl -mr-64 -mt-32" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl -mr-64 -mt-32" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/10 rounded-full blur-3xl -ml-32 -mb-32" />
       </div>
 
@@ -27,7 +27,7 @@ export default function Hero({ settings }: HeroProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="inline-block px-4 py-1.5 rounded-full bg-primary/5 text-primary dark:text-blue-400 text-sm font-bold mb-6 border border-primary/10"
+            className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent dark:text-accent text-sm font-bold mb-6 border border-accent/20"
           >
             📍 Badtasan, Kiamba, Sarangani Province
           </motion.span>
@@ -45,7 +45,7 @@ export default function Hero({ settings }: HeroProps) {
               href="#products"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-primary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
+              className="px-8 py-4 bg-slate-900 dark:bg-accent text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-slate-900/20 dark:shadow-accent/20 hover:opacity-90 transition-all"
             >
               <ShoppingCart size={20} />
               Shop Now
