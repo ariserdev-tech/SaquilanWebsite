@@ -42,9 +42,6 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-white shadow-lg shadow-accent/20 group-hover:scale-110 transition-transform">
             <Store size={24} strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-extrabold tracking-tighter text-white leading-none font-display">
-            SAQUILAN<br /><span className="text-accent">MERCHANDISE</span>
-          </span>
         </button>
 
         {/* Navigation Tabs (Desktop & Mobile) */}
