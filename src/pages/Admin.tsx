@@ -106,24 +106,30 @@ export default function Admin() {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
       const filePath = fileName;
 
-      // Use XMLHttpRequest for progress tracking
-      return new Promise<string | null>((resolve, reject) => {
+      // Correctly derive storage endpoint
+      // getPublicUrl returns something like https://[ref].supabase.co/storage/v1/object/public/[bucket]/[path]
+      const publicUrlInfo = supabase.storage.from(bucket).getPublicUrl(filePath);
+      const publicUrl = publicUrlInfo.data.publicUrl;
+      const baseUrl = publicUrl.split('/public/')[0];
+      const uploadUrl = `${baseUrl}/${bucket}/${filePath}`;
+
+      const result = await new Promise<string | null>(async (resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        const url = `${supabase.storage.from(bucket).getPublicUrl(filePath).data.publicUrl.split('/public/')[0]}/object/${bucket}/${filePath}`;
+        xhr.open('POST', uploadUrl);
 
-        xhr.open('POST', url);
+        // Explicitly get session and anon key for headers
+        const { data: { session } } = await supabase.auth.getSession();
+        const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-        // Headers from supabase client session
-        const token = (supabase as any).auth.session?.access_token || (supabase as any).auth?.headers?.Authorization?.split(' ')[1];
+        if (session) {
+          xhr.setRequestHeader('Authorization', `Bearer ${session.access_token}`);
+        }
+        if (anonKey) {
+          xhr.setRequestHeader('apikey', anonKey);
+        }
 
-        // Since we are using the public client, we might need the anon key if not logged in, 
-        // but here we are in Admin so we should have a session.
-        // Actually, supabase-js uses a more complex header setup. 
-        // Let's try to get it from the client instance.
-        const headers = (supabase as any).storage.from(bucket).headers || {};
-        Object.keys(headers).forEach(key => {
-          xhr.setRequestHeader(key, headers[key]);
-        });
+        // Ensure Content-Type is set for storage
+        xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
 
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
@@ -137,16 +143,19 @@ export default function Admin() {
             const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(filePath);
             resolve(publicUrl);
           } else {
-            console.error('Upload failed with status:', xhr.status, xhr.responseText);
-            reject(new Error(`Upload failed: ${xhr.statusText}`));
+            console.error('Upload failed status:', xhr.status, xhr.responseText);
+            reject(new Error(`Upload failed (${xhr.status}): ${xhr.statusText}`));
           }
         };
 
         xhr.onerror = () => reject(new Error('Network error during upload'));
-
-        // We need to send the file as body. Supabase expects the file directly.
         xhr.send(file);
       });
+
+      // Show 100% for a moment before finishing
+      setUploadProgress(100);
+      await new Promise(r => setTimeout(r, 800));
+      return result;
     } catch (error: any) {
       console.error('Error in uploadImage:', error);
       alert(error.message || 'Error uploading image.');
@@ -460,12 +469,12 @@ export default function Admin() {
                         />
                       </label>
                       {uploadingImage && (
-                        <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 flex flex-col items-center justify-center gap-3">
+                        <div className="absolute inset-0 bg-white/90 dark:bg-slate-950/90 flex flex-col items-center justify-center gap-3">
                           <div className="relative w-16 h-16 flex items-center justify-center">
-                            <Loader2 className="animate-spin text-primary absolute inset-0" size={64} />
-                            <span className="text-[10px] font-black text-primary">{uploadProgress}%</span>
+                            <Loader2 className="animate-spin text-accent absolute inset-0" size={64} />
+                            <span className="text-[10px] font-black text-accent">{uploadProgress}%</span>
                           </div>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-primary animate-pulse">Uploading...</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-accent animate-pulse">Uploading...</span>
                         </div>
                       )}
                     </div>
@@ -716,12 +725,12 @@ export default function Admin() {
                             }} />
                           </label>
                           {uploadingImage && (
-                            <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 flex flex-col items-center justify-center gap-2">
+                            <div className="absolute inset-0 bg-white/90 dark:bg-slate-950/90 flex flex-col items-center justify-center gap-2">
                               <div className="relative w-12 h-12 flex items-center justify-center">
-                                <Loader2 className="animate-spin text-primary absolute inset-0" size={48} />
-                                <span className="text-[8px] font-black text-primary">{uploadProgress}%</span>
+                                <Loader2 className="animate-spin text-accent absolute inset-0" size={48} />
+                                <span className="text-[8px] font-black text-accent">{uploadProgress}%</span>
                               </div>
-                              <span className="text-[8px] font-black uppercase tracking-widest text-primary">Uploading...</span>
+                              <span className="text-[8px] font-black uppercase tracking-widest text-accent">Uploading...</span>
                             </div>
                           )}
                         </div>
@@ -742,12 +751,12 @@ export default function Admin() {
                             }} />
                           </label>
                           {uploadingImage && (
-                            <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 flex flex-col items-center justify-center gap-2">
+                            <div className="absolute inset-0 bg-white/90 dark:bg-slate-950/90 flex flex-col items-center justify-center gap-2">
                               <div className="relative w-12 h-12 flex items-center justify-center">
-                                <Loader2 className="animate-spin text-primary absolute inset-0" size={48} />
-                                <span className="text-[8px] font-black text-primary">{uploadProgress}%</span>
+                                <Loader2 className="animate-spin text-accent absolute inset-0" size={48} />
+                                <span className="text-[8px] font-black text-accent">{uploadProgress}%</span>
                               </div>
-                              <span className="text-[8px] font-black uppercase tracking-widest text-primary">Uploading...</span>
+                              <span className="text-[8px] font-black uppercase tracking-widest text-accent">Uploading...</span>
                             </div>
                           )}
                         </div>

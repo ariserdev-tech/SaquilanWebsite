@@ -81,7 +81,7 @@ export default function Contact({ settings }: ContactProps) {
     }
   };
 
-  const position: [number, number] = [5.9897, 124.6311]; // Kiamba, Sarangani Coordinates
+  const position: [number, number] = [settings?.lat || 5.9897, settings?.lng || 124.6311];
 
   return (
     <section id="contact" className="py-24 bg-white dark:bg-slate-900/50">
