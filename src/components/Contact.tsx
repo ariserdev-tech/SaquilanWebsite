@@ -34,6 +34,10 @@ export default function Contact({ settings }: ContactProps) {
     setFormStatus('idle');
 
     const form = e.target as HTMLFormElement;
+    const formDataObj = new FormData(form);
+    const name = formDataObj.get('name') as string;
+    const email = formDataObj.get('email') as string;
+    const message = formDataObj.get('message') as string;
 
     // Add current time for the {{time}} variable in the template
     const timeField = document.createElement('input');
@@ -47,16 +51,15 @@ export default function Contact({ settings }: ContactProps) {
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-    if (!serviceId || !templateId || !publicKey) {
-      console.error('EmailJS keys are missing in .env file');
-      setFormStatus('error');
-      setIsSubmitting(false);
-      // Clean up the temporary field if keys are missing
-      if (form.contains(timeField)) form.removeChild(timeField);
-      return;
-    }
-
     try {
+      if (!serviceId || !templateId || !publicKey) {
+        console.error('EmailJS keys are missing in .env file');
+        setFormStatus('error');
+        setIsSubmitting(false);
+        if (form.contains(timeField)) form.removeChild(timeField);
+        return;
+      }
+
       const response = await emailjs.sendForm(
         serviceId,
         templateId,

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Info, Mail, Store } from 'lucide-react';
+import { ShoppingBag, Info, Mail, Store, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/src/lib/utils';
+import { useCart } from '../context/CartContext';
 
 interface HeaderProps {
   activeTab: string;
@@ -10,6 +11,8 @@ interface HeaderProps {
 
 export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { totalItems, setIsCartOpen } = useCart();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -88,7 +91,21 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
             );
           })}
         </nav>
+
+        {/* Cart Button */}
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="relative p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl transition-all group"
+        >
+          <ShoppingCart size={20} className="text-slate-300 group-hover:text-accent transition-colors" />
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-900 shadow-lg">
+              {totalItems}
+            </span>
+          )}
+        </button>
       </div>
     </header>
+
   );
 }

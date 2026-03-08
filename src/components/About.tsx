@@ -24,6 +24,7 @@ export default function About({ settings }: AboutProps) {
               <img
                 src={settings?.about_image_url || "https://picsum.photos/seed/owner/800/800"}
                 alt="Store Owner"
+                loading="lazy"
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />

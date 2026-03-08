@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Maximize2 } from 'lucide-react';
+import { Maximize2, ShoppingCart } from 'lucide-react';
 import { Product } from '@/src/lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +13,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const isOutOfStock = product.stock_status === 'out_of_stock';
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   return (
     <>
@@ -34,6 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <img
             src={product.image_url}
             alt={product.name}
+            loading="lazy"
             onLoad={() => setImageLoaded(true)}
             className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             referrerPolicy="no-referrer"
@@ -70,20 +73,33 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
 
-          <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 flex-grow leading-relaxed">
+          <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 mb-4 flex-grow leading-relaxed">
             {product.description}
           </p>
 
-          <div className="pt-2 border-t border-slate-700 flex items-center">
+          <div className="pt-2 border-t border-slate-700 flex items-center justify-between gap-2">
             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${isOutOfStock
               ? 'bg-red-900/30 text-red-400'
               : 'bg-green-900/30 text-green-400'
               }`}>
               {isOutOfStock ? 'OUT OF STOCK' : 'AVAILABLE'}
             </span>
+            {!isOutOfStock && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart(product);
+                }}
+                className="p-1.5 bg-accent/20 hover:bg-accent text-accent hover:text-white rounded-lg transition-all"
+                title="Order This"
+              >
+                <ShoppingCart size={14} strokeWidth={2.5} />
+              </button>
+            )}
           </div>
         </div>
       </motion.div>
+
 
     </>
   );

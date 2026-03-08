@@ -73,6 +73,7 @@ export default function Hero({ settings, setActiveTab }: HeroProps) {
             <img
               src={settings?.hero_image_url || "https://picsum.photos/seed/ecommerce/800/1000"}
               alt="Hero Product"
+              loading="lazy"
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />

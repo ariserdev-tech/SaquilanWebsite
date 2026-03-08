@@ -1,63 +1,48 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useAnimation, useInView } from 'motion/react';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { supabase, Product, Category } from '@/src/lib/supabaseClient';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
+import { Search, Loader2, AlertCircle } from 'lucide-react';
+import { supabase, Product, Category } from '../lib/supabaseClient';
 import ProductCard from './ProductCard';
-import { Loader2 } from 'lucide-react';
 
 export default function Products() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          supabase.from('products').select('*').order('created_at', { ascending: false }),
+          supabase.from('categories').select('*').order('name'),
+        ]);
+
+        if (productsRes.error) throw productsRes.error;
+        if (categoriesRes.error) throw categoriesRes.error;
+
+        setProducts(productsRes.data || []);
+        setCategories(categoriesRes.data || []);
+      } catch (err: any) {
+        console.error('Failed to fetch products/categories:', err);
+        setError('Could not load products. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
     fetchData();
   }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const { data: prodData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-      const { data: catData } = await supabase.from('categories').select('*').order('name');
-
-      if (prodData) setProducts(prodData);
-      if (catData) setCategories(catData);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredProducts = products.filter((p) => {
     const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-
-  // Carousel Logic
-  useEffect(() => {
-    if (isPaused || activeCategory !== 'All' || searchQuery !== '') return;
-
-    const interval = setInterval(() => {
-      if (carouselRef.current) {
-        const { scrollLeft, offsetWidth, scrollWidth } = carouselRef.current;
-        const nextScroll = scrollLeft + offsetWidth;
-
-        if (nextScroll >= scrollWidth) {
-          carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          carouselRef.current.scrollTo({ left: nextScroll, behavior: 'smooth' });
-        }
-      }
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [isPaused, activeCategory, searchQuery]);
 
   return (
     <section id="products" className="py-24 bg-slate-50 dark:bg-slate-900/50">
@@ -120,6 +105,11 @@ export default function Products() {
             <div className="col-span-full py-20 flex flex-col items-center gap-4 text-slate-400">
               <Loader2 className="animate-spin text-primary" size={40} />
               <p className="font-medium">Loading merchandises...</p>
+            </div>
+          ) : error ? (
+            <div className="col-span-full py-20 flex flex-col items-center gap-3 text-red-400">
+              <AlertCircle size={40} />
+              <p className="font-medium">{error}</p>
             </div>
           ) : filteredProducts.length > 0 ? (
             filteredProducts.map((product) => (

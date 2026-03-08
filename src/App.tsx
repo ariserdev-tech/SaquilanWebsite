@@ -7,10 +7,12 @@ import Contact from './components/Contact';
 import Products from './components/Products';
 import Footer from './components/Footer';
 import BackToTop from './components/BackToTop';
-import Admin from './pages/Admin';
-import { supabase, SiteSettings } from './lib/supabaseClient';
 import { Loader2 } from 'lucide-react';
 import ProductDetail from './pages/ProductDetail';
+import { supabase, SiteSettings } from './lib/supabaseClient';
+import { siteSettings as fallbackSettings } from './lib/data';
+import { CartProvider } from './context/CartContext';
+import Cart from './components/Cart';
 
 // Force dark mode permanently
 document.documentElement.classList.add('dark');
@@ -18,19 +20,27 @@ document.documentElement.classList.add('dark');
 function MainLayout() {
   const [activeTab, setActiveTab] = useState('home');
   const [settings, setSettings] = useState<SiteSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [settingsLoading, setSettingsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSettings = async () => {
+    async function fetchSettings() {
       try {
-        const { data } = await supabase.from('settings').select('*').single();
-        if (data) setSettings(data);
-      } catch (error) {
-        console.error('Error fetching settings:', error);
+        const { data, error } = await supabase
+          .from('settings')
+          .select('*')
+          .limit(1)
+          .single();
+
+        if (error) throw error;
+        setSettings(data as SiteSettings);
+      } catch (err) {
+        console.warn('Could not load settings from Supabase, using defaults.', err);
+        setSettings(fallbackSettings);
       } finally {
-        setLoading(false);
+        setSettingsLoading(false);
       }
-    };
+    }
+
     fetchSettings();
   }, []);
 
@@ -38,10 +48,12 @@ function MainLayout() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
 
-  if (loading) {
+  // Show a brief splash while settings load so hero/about/footer
+  // don't flash with wrong content
+  if (settingsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <Loader2 className="animate-spin text-accent" size={48} />
+        <Loader2 className="animate-spin text-accent" size={36} />
       </div>
     );
   }
@@ -66,26 +78,22 @@ function MainLayout() {
 
       <Footer settings={settings} />
       <BackToTop />
+      <Cart />
     </div>
   );
 }
 
-function AdminLayout() {
-  return (
-    <div className="min-h-screen bg-slate-950 font-sans">
-      <Admin />
-    </div>
-  );
-}
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />} />
-        <Route path="/admin" element={<AdminLayout />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="*" element={<Navigate to="/" replace />} />      </Routes>
-    </Router>
+    <CartProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<MainLayout />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </CartProvider>
   );
 }
